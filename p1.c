@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <fcntl.h>
+#include <sys/stat.h>
 
 
 int main (int argc, char *argv[]) {
@@ -24,8 +26,8 @@ int main (int argc, char *argv[]) {
   printf("Enter string 2: ");
   scanf("%s", s2);
 
-  write(fd, s1, strlen(s)+1);
-  write(fd, s2, strlen(s)+1);
+  write(fd1, s1, strlen(s1)+1);
+  write(fd1, s2, strlen(s2)+1);
 
   close(fd1);
 

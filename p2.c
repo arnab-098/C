@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <fcntl.h>
+#include <sys/stat.h>
 
 int main (int argc, char *argv[]) {
 
@@ -15,18 +17,20 @@ int main (int argc, char *argv[]) {
     exit(EXIT_FAILURE);
   }
 
-  int s1[100], s2[100], result[10];
+  char s1[100], s2[100], result[10];
 
   read(fd1, s1, sizeof(s1));
   read(fd1, s2, sizeof(s2));
 
   close(fd1);
 
-  if (strcpm(s1, s2) == 0) {
+  if (strcmp(s1, s2) == 0) {
     strcpy(result, "SAME");
   } else {
     strcpy(result, "NOT SAME");
   }
+
+  printf("Compared\n");
 
   int fd2 = open(fifo, O_WRONLY);
 
