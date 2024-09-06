@@ -16,7 +16,7 @@ int main (int argc, char *argv[]) {
   if (pid1 == 0) {
     printf("Child process 1\n");
     printf("PID: %d\tPPID: %d\n", getpid(), getppid());
-    sleep(4);
+    sleep(5);
     printf("\nChild 1 terminating");
   }
   else {
