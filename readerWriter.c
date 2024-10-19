@@ -52,7 +52,7 @@ void *reader(void *args) {
 }
 
 
-void *writeMutexr(void *args) {
+void *writer(void *args) {
 
   while (1) {
 
@@ -94,7 +94,7 @@ int main(int argc, char *argv[]) {
         exit(EXIT_FAILURE);
       }
     } else {
-      if (pthread_create(&th[i], NULL, &writeMutexr, NULL) != 0) {
+      if (pthread_create(&th[i], NULL, &writer, NULL) != 0) {
         perror("FAILED TO CREATE THREAD\n");
         exit(EXIT_FAILURE);
       }
