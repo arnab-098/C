@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <string.h>
+#include <ctype.h>
 
 const char* FIFO1 = "./fifo1";
 const char* FIFO2 = "./fifo2";
@@ -31,7 +32,10 @@ int main(int argc, char *argv[]) {
 
   char result[number];
   strncpy(result, buffer+index, number);
-  result[strlen(result)] = '\0';
+  for (int i=0; i<number; i++) {
+    result[i] = toupper(result[i]);
+  }
+  result[number] = '\0';
 
   write(fd2, result, strlen(result)+1);
 
