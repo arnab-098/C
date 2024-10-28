@@ -26,8 +26,10 @@ int main (int argc, char *argv[]) {
 
   printf("Enter string 1: ");
   fgets(buf1, sizeof(buf1), stdin);
+  buf1[strlen(buf1)-1] = '\0';
   printf("Enter string 2: ");
   fgets(buf2, sizeof(buf2), stdin);
+  buf2[strlen(buf2)-1] = '\0';
 
   if (write(fd1, buf1, strlen(buf1)+1) == -1) {
     fprintf(stderr, "Failed to write to pipe: %d\n", errno);

@@ -47,7 +47,7 @@ int main (int argc, char *argv[]) {
     return 1;
   }
 
-  printf("String 1: %s\n String 2: %s\n", buf1, buf2);
+  printf("String 1: %s\nString 2: %s\n", buf1, buf2);
 
   compare(buf1, buf2, result);
 
