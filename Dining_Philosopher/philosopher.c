@@ -14,7 +14,7 @@ void handler(int sigNum);
 char *generateName(int num);
 
 int main(int argc, char *argv[]) {
-  if (argc != 2) {
+  if (argc < 2) {
     fprintf(stderr, "Invalid syntax\n");
     exit(1);
   }
@@ -33,13 +33,27 @@ int main(int argc, char *argv[]) {
 
   sbuf = (buffer *)shmat(shmid, NULL, 0);
 
-  buf_init(sbuf);
+  if (argc == 3 && getFinish(sbuf)) {
+    fprintf(stderr, "All the philosophers have already been seated\n");
+    exit(1);
+  } else if (argc == 3 && !getFinish(sbuf)) {
+    buf_init(sbuf);
+    finished(sbuf);
+  } else {
+    buf_init(sbuf);
+  }
 
-  if (!psem_init(&mutex1, generateName(NUM), 1)) {
+  int n1, n2;
+  if (argc == 2) {
+    n1 = NUM, n2 = NUM+1;
+  } else {
+    n1 = NUM, n2 = 1;
+  }
+  if (!psem_init(&mutex1, generateName(n1), 1)) {
     fprintf(stderr, "Failed to initialize semaphore\n");
     exit(1);
   }
-  if (!psem_init(&mutex2, generateName(NUM+1), 1)) {
+  if (!psem_init(&mutex2, generateName(n2), 1)) {
     fprintf(stderr, "Failed to initialize semaphore\n");
     exit(1);
   }
@@ -58,12 +72,9 @@ int main(int argc, char *argv[]) {
     sleep(5);
   }
 
-  if (NUM == 1) {
-    psem_destroy(&mutex1);
-    psem_destroy(&mutex2);
-  } else {
-    psem_destroy(&mutex2);
-  }
+  printf("Exiting program\n");
+
+  psem_destroy(&mutex1);
 
   return 0;
 }
