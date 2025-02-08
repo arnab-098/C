@@ -26,14 +26,23 @@ int main(int argc, char **argv) {
 
   int N = atoi(getText(&buf));
 
+  array a;
+  createArray(&a);
+
 	for (int i; i<N; i++) {
 		if (msgrcv(msgid, (void *)&buf, BUF_SIZE, MSG_TO_RECEIVE, 0) == -1) {
 			fprintf(stderr, "msgrcv failed with error: %d\n", errno);
 			return -1;
 		}
 
-    printf("%s\n", getText(&buf));
+    insertArray(&arr, &strtol(getText(&buf), NULL, 10));
 	}
+
+  sort(&a);
+
+  for (int i=0; i<a.size; i++) {
+    printf("%s", getArray(&a, i));
+  }
 
 	return 0;
 }

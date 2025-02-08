@@ -8,12 +8,11 @@
 
 const key_t KEY = 1234;
 
-char *readInput(char *inputText) {
-  char *string = (char *)malloc(sizeof(char) * BUF_SIZE);
+char *readInput(char *string, char *inputText) {
+  string = (char *)malloc(sizeof(char) * BUF_SIZE);
 	printf("%s", inputText);
   fgets(string, BUF_SIZE, stdin);
   string[strlen(string)-1] = '\0';
-  return string;
 }
 
 int sendMessage(int msgid, int type, char *text) {
@@ -44,8 +43,8 @@ int sendData(int msgid, int N) {
 
   for (int i=0; i < N; i++) {
     printf("\n");
-    name = readInput("Enter name: ");
-    roll = readInput("Enter roll: ");
+    readInput(name, "Enter name: ");
+    readInput(roll, "Enter roll: ");
 
     sendMessage(msgid, 1, name);
     sendMessage(msgid, 2, roll);

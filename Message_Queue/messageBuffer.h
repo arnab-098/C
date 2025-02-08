@@ -7,11 +7,11 @@
 typedef struct Buffer {
 	long mtype;
 	char mtext[BUF_SIZE];
-}buffer;
+} buffer;
 
 int set_buf(buffer *b, long type, char *text);
 
-#endif 
+#endif //!BUFFER
 
 int set_buf(buffer *b, long type, char *text) {
 	if (strlen(text) >= BUF_SIZE) {
