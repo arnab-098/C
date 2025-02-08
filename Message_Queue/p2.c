@@ -30,27 +30,35 @@ int main(int argc, char **argv) {
   int N = atoi(getText(&buf));
 
   array arr;
-  createArray(&arr, sizeof(char *));
-
-  char *data;
+  createArray(&arr);
 
 	for (int i=0; i<N; i++) {
 		if (msgrcv(msgid, (void *)&buf, BUFFER_SIZE, MSG_TO_RECEIVE, 0) == -1) {
 			fprintf(stderr, "msgrcv failed with error: %d\n", errno);
 			return -1;
 		}
-    data = getText(&buf);
-    printf("%s\n", data);
+    char *data = getText(&buf);
     insertArray(&arr, (void *)data);
 	}
 
+  printf("Before sort:\t");
+  for (int i=0; i<getArraySize(&arr); i++) {
+    printf("%s\t", getArrayElement(&arr, i));
+  }
+
   sort(&arr, SORT_TYPE);
 
-  printf("\n");
-
-  for (int i=0; getArraySize(&arr); i++) {
-    printf("%s\n", getArray(&arr, i));
+  printf("\nAfter sort:\t");
+  for (int i=0; i<getArraySize(&arr); i++) {
+    printf("%s\t", getArrayElement(&arr, i));
   }
+
+  printf("\nMemory addresses:\n");
+  for (int i=0; i<getArraySize(&arr); i++) {
+    printf("%p\n", getArrayElement(&arr, i));
+  }
+
+  destroyArray(&arr);
 
 	return 0;
 }

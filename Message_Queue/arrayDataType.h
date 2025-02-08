@@ -11,24 +11,28 @@ typedef struct Array {
   void **buf;
 } array; 
 
-void createArray(array *a, size_t dataSize);
+void createArray(array *a);
 void setArray(array *a, size_t idx, void *data);
-void *getArray(array *a, size_t idx);
+void *getArrayElement(array *a, size_t idx);
 void insertArray(array *a, void *data);
-void replaceAtPosArray(array *a, void *data, int pos);
+void replaceAtPosArray(array *a, void *data, size_t pos);
 int getArraySize(array *a);
+void destroyArray(array *a);
 
-void createArray(array *a, size_t dataSize) {
+void createArray(array *a) {
   a->capacity = ARRAY_MIN_CAP;
   a->size = 0;
-  a->buf = malloc(dataSize * a->capacity);
+  a->buf = malloc(sizeof(*a->buf) * a->capacity);
 }
 
 void setArray(array *a, size_t idx, void *data) {
   a->buf[idx] = data;
 }
 
-void *getArray(array *a, size_t idx) {
+void *getArrayElement(array *a, size_t idx) {
+  if (idx >= a->size) {
+    return NULL;
+  }
   return a->buf[idx];
 }
 
@@ -37,10 +41,11 @@ void insertArray(array *a, void *data) {
     a->capacity *= 2;
     a->buf = realloc(a->buf, sizeof(*a->buf) * a->capacity);
   }
-  setArray(a, a->size++, data);
+  setArray(a, a->size, data);
+  (a->size)++;
 }
 
-void replaceAtPosArray(array *a, void *data, int pos) {
+void replaceAtPosArray(array *a, void *data, size_t pos) {
   if (pos >= a->size) {
     return;
   }
@@ -49,6 +54,12 @@ void replaceAtPosArray(array *a, void *data, int pos) {
 
 int getArraySize(array *a) {
   return a->size;
+}
+
+void destroyArray(array *a) {
+  free(a->buf);
+  a->size = 0;
+  a->capacity = 0;
 }
 
 #endif // !ARRAY

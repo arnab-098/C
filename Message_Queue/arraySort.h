@@ -6,7 +6,7 @@
 
 int compareString(char *str1, char *str2);
 int compareLong(long *num1, long *num2);
-int compare(void *data1, void *data2, int type);
+int compare(void *leftArrData, void *rightArrData, int type);
 void merge(array *a, int left, int mid, int right, int type);
 void mergeSort(array *a, int left, int right, int type);
 void sort(array *a, const int type);
@@ -17,22 +17,19 @@ int compareString(char *str1, char *str2) {
 
 int compareLong(long int *num1, long int *num2) {
   if (*num1 > *num2) {
-    printf("%ld is greater than %ld\n", *num1, *num2);
     return 1;
   } else if (*num1 < *num2) {
-    printf("%ld is less than %ld\n", *num1, *num2);
     return -1;
   } else {
-    printf("%ld is equal to %ld\n", *num1, *num2);
     return 0;
   }
 }
 
-int compare(void *data1, void *data2, int type) {
+int compare(void *leftArrData, void *rightArrData, int type) {
   if (type == 1) {
-    return compareString(data1, data2);
+    return compareString(leftArrData, rightArrData);
   } else {
-    return compareLong(data1, data2);
+    return compareLong(leftArrData, rightArrData);
   }
 }
 
@@ -42,42 +39,51 @@ void merge(array *a, int left, int mid, int right, int type) {
   int n2 = right - mid;
 
   array leftArr, rightArr;
-  createArray(&leftArr, sizeof(getArray(a, left)));
-  createArray(&rightArr, sizeof(getArray(a, right)));
+  createArray(&leftArr);
+  createArray(&rightArr);
 
   for (i = 0; i < n1; i++) {
-    insertArray(&leftArr, getArray(a, left+i));
+    insertArray(&leftArr, getArrayElement(a, left+i));
   }
   for (j = 0; j < n2; j++) {
-    insertArray(&rightArr, getArray(a, mid+1+j));
+    insertArray(&rightArr, getArrayElement(a, mid+1+j));
   }
+
+  void *leftArrData, *rightArrData;
 
   i = 0;
   j = 0;
   k = left;
+
   while (i < n1 && j < n2) {
-    if (compare(getArray(&leftArr, i), getArray(&rightArr, j), type)) {
-      replaceAtPosArray(a, getArray(&leftArr, i), k);
+    leftArrData = getArrayElement(&leftArr, i);
+    rightArrData = getArrayElement(&rightArr, j);
+    if (compare(leftArrData, rightArrData, type) < 0) {
+      replaceAtPosArray(a, leftArrData, k);
       i++;
-    }
-    else {
-      replaceAtPosArray(a, getArray(&rightArr, j), k);
+    } else {
+      replaceAtPosArray(a, rightArrData, k);
       j++;
     }
     k++;
   }
 
   while (i < n1) {
-    replaceAtPosArray(a, getArray(&leftArr, i), k);
+    leftArrData = getArrayElement(&leftArr, i);
+    replaceAtPosArray(a, leftArrData, k);
     i++;
     k++;
   }
 
   while (j < n2) {
-    replaceAtPosArray(a, getArray(&rightArr, j), k);
+    rightArrData = getArrayElement(&rightArr, j);
+    replaceAtPosArray(a, rightArrData, k);
     j++;
     k++;
   }
+
+  destroyArray(&leftArr);
+  destroyArray(&rightArr);
 }
 
 void mergeSort(array *a, int left, int right, int type) {
@@ -93,7 +99,7 @@ void mergeSort(array *a, int left, int right, int type) {
 }
 
 void sort(array *a, const int type) {
-  mergeSort(a, 0, a->size-1, type);
+  mergeSort(a, 0, getArraySize(a)-1, type);
 }
 
 #endif // !SORT

@@ -30,9 +30,7 @@ int main(int argc, char **argv) {
   int N = atoi(getText(&buf));
 
   array arr;
-  createArray(&arr, sizeof(long int *));
-
-  long int data;
+  createArray(&arr);
 
 	for (int i=0; i<N; i++) {
 		if (msgrcv(msgid, (void *)&buf, BUFFER_SIZE, MSG_TO_RECEIVE, 0) == -1) {
@@ -40,18 +38,29 @@ int main(int argc, char **argv) {
 			return -1;
 		}
 
-    data = strtol(getText(&buf), NULL, 10);
+    long int data = strtol(getText(&buf), NULL, 10);
     insertArray(&arr, (void *)&data);
-    printf("%ld\n", *((long int *)getArray(&arr, arr.size-1)));
 	}
+
+  printf("Before sort:\t");
+  for (int i=0; i<getArraySize(&arr); i++) {
+    printf("%ld\t", *((long int *)getArrayElement(&arr, i)));
+  }
 
   sort(&arr, SORT_TYPE);
 
+  printf("\nAfter sort:\t");
+  for (int i=0; i<getArraySize(&arr); i++) {
+    printf("%ld\t", *((long int *)getArrayElement(&arr, i)));
+  }
   printf("\n");
 
-  for (int i=0; getArraySize(&arr); i++) {
-    printf("%ld\n", *((long int *)getArray(&arr, i)));
+  printf("\nMemory addresses:\n");
+  for (int i=0; i<getArraySize(&arr); i++) {
+    printf("%p\n", getArrayElement(&arr, i));
   }
+
+  destroyArray(&arr);
 
 	return 0;
 }
