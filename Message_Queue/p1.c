@@ -3,26 +3,25 @@
 #include <sys/msg.h>
 #include <unistd.h>
 #include <errno.h>
-#include "buffer.h"
+#include "messageBuffer.h"
 
 
 const key_t KEY = 1234;
 
-char *readInput(char *string, char *inputText) {
-  string = (char *)malloc(sizeof(char) * BUF_SIZE);
+void readInput(char *string, char *inputText) {
 	printf("%s", inputText);
-  fgets(string, BUF_SIZE, stdin);
+  fgets(string, BUFFER_SIZE, stdin);
   string[strlen(string)-1] = '\0';
 }
 
 int sendMessage(int msgid, int type, char *text) {
   buffer buf;
 
-  if (set_buf(&buf, (long)type, text) == -1) {
+  if (setBuffer(&buf, (long)type, text) == -1) {
 		fprintf(stderr, "buffer overflow detected\n");
     exit(1);
   }
-	if (msgsnd(msgid, (void *)&buf, BUF_SIZE, 0) == -1) {
+	if (msgsnd(msgid, (void *)&buf, BUFFER_SIZE, 0) == -1) {
 		fprintf(stderr, "msgsnd failed with error: %d\n", errno);
     exit(1);
 	}
@@ -32,8 +31,10 @@ int sendMessage(int msgid, int type, char *text) {
 
 int sendData(int msgid, int N) {
   char *name, *roll;
+  name = (char *)malloc(sizeof(char) * BUFFER_SIZE);
+  roll = (char *)malloc(sizeof(char) * BUFFER_SIZE);
 
-  char numOfStudents[BUF_SIZE];
+  char numOfStudents[BUFFER_SIZE];
   sprintf(numOfStudents, "%d", N);
 
   sendMessage(msgid, 1, numOfStudents);

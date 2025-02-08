@@ -1,20 +1,21 @@
 #ifndef BUFFER
 
+#define BUFFER
+
 #include <string.h>
 
-#define BUF_SIZE 100
+#define BUFFER_SIZE 100
 
 typedef struct Buffer {
 	long mtype;
-	char mtext[BUF_SIZE];
+	char mtext[BUFFER_SIZE];
 } buffer;
 
-int set_buf(buffer *b, long type, char *text);
+int setBuffer(buffer *b, long type, char *text);
+char *getText(buffer *b);
 
-#endif //!BUFFER
-
-int set_buf(buffer *b, long type, char *text) {
-	if (strlen(text) >= BUF_SIZE) {
+int setBuffer(buffer *b, long type, char *text) {
+	if (strlen(text) >= BUFFER_SIZE) {
 		return -1;
 	}
 	b->mtype = type;
@@ -25,3 +26,5 @@ int set_buf(buffer *b, long type, char *text) {
 char *getText(buffer *b) {
   return b->mtext;
 }
+
+#endif //!BUFFER
