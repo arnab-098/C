@@ -39,7 +39,7 @@ int main(int argc, char **argv) {
 
   receiveData(msgid, N, &arr);
 
-  printf("Received student roll numbers:\n");
+  printf("Received student roll numbers:\t");
   displayArray(&arr);
 
   printf("Sorting student roll numbers...\n");

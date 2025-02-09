@@ -42,7 +42,7 @@ int main(int argc, char **argv) {
   sendData(msgid, N);
   receiveData(msgid, N, &names, &rolls);
 
-  printf("Sorted names:\t");
+  printf("\nSorted names:\t");
   displayArray(&names);
   printf("Sorted rolls:\t");
   displayArray(&rolls);

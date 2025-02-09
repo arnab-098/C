@@ -39,7 +39,7 @@ int main(int argc, char **argv) {
 
   receiveData(msgid, N, &arr);
 
-  printf("Received student names:\n");
+  printf("Received student names:\t");
   displayArray(&arr);
 
   printf("Sorting student name...\n");
