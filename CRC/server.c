@@ -11,6 +11,7 @@
 const char *SOCKET_PATH = "socket_server";
 const int BUFFER_SIZE = 64;
 const int LISTEN_BACKLOG = 5;
+const char *TERMINATION_PROMPT = "end";
 
 void handleError(char *error) {
 	fprintf(stderr, "%s failed with error: %d\n", error, errno);
@@ -67,19 +68,24 @@ int main(){
 	char *divisor = (char *)malloc(sizeof(char) * BUFFER_SIZE);
 
 	while(1){
-		printf("Server is waiting...\n");
-
 		read(client_sockfd, data, BUFFER_SIZE);
+
+    if (strcmp(data, TERMINATION_PROMPT) == 0) {
+      break;
+    }
+
 		read(client_sockfd, divisor, BUFFER_SIZE);
 
-		printf("Data read from client %s and %s\n", data, divisor);
+		printf("\nData read from client %s and %s\n", data, divisor);
 
-		//addRedundantBits(data, divisor);
+		addRedundantBits(data, divisor);
 
-		write(client_sockfd, data, strlen(divisor)+1);
+		write(client_sockfd, data, strlen(data)+1);
 
 		printf("Result sent to client: %s\n", data);
 	}
+
+  printf("\nServer closing connection...\n");
 
 	close(server_sockfd);
 

@@ -11,6 +11,7 @@
 
 const char *SOCKET_PATH = "socket_server";
 const int BUFFER_SIZE = 64;
+const char *TERMINATION_PROMPT = "end";
 
 void handleError(char *error) {
 	fprintf(stderr, "%s failed with error: %d\n", error, errno);
@@ -46,19 +47,23 @@ int main(){
 	char data[BUFFER_SIZE], divisor[BUFFER_SIZE], result[BUFFER_SIZE];
 
 	while(1){
-		readInput(data, "Enter the data: ");
-		readInput(divisor, "Enter the divisor: ");
-		
+		readInput(data, "\nEnter the data: ");
 		write(sockfd, data, strlen(data)+1);
+
+    if (strcmp(data, TERMINATION_PROMPT) == 0) {
+      break;
+    }
+
+		readInput(divisor, "Enter the divisor: ");
 		write(sockfd, divisor, strlen(divisor)+1);
 		
-		printf("%s and %s is sent to server\n", data, divisor);
-
 		read(sockfd, result, BUFFER_SIZE);
 
 		printf("Message got from server: %s\n", result);
 
 	}
+
+  printf("\nClient closing connection...\n");
 
 	close(sockfd);
 
