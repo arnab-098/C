@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
+#include "crc.h"
 
 const char *SOCKET_PATH = "socket_server";
 const int BUFFER_SIZE = 64;
@@ -29,6 +30,18 @@ void addRedundantBits(char *data, char *divisor) {
 		data[i] = '0';
 	}
 	data[i] = '\0';
+}
+
+void modifyRedundantBits(char *data, char *remainder) {
+  for (int i = strlen(data) - strlen(remainder), j = 0; i<strlen(data); i++, j++) {
+    data[i] = remainder[j];
+  }
+}
+
+void errorHandling(char *data, char *divisor) {
+  addRedundantBits(data, divisor);
+  char *remainder = crc(data, divisor);
+  modifyRedundantBits(data, remainder);
 }
 
 int main(){
@@ -78,7 +91,7 @@ int main(){
 
 		printf("\nData read from client %s and %s\n", data, divisor);
 
-		addRedundantBits(data, divisor);
+    errorHandling(data, divisor);
 
 		write(client_sockfd, data, strlen(data)+1);
 

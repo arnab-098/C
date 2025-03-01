@@ -8,6 +8,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <errno.h>
+#include "crc.h"
 
 const char *SOCKET_PATH = "socket_server";
 const int BUFFER_SIZE = 64;
@@ -22,6 +23,17 @@ void readInput(char *data, char *prompt) {
 	printf("%s", prompt);
 	fgets(data, BUFFER_SIZE, stdin);
 	data[strlen(data)-1] = '\0';
+}
+
+void checkError(char *data, char *divisor) {
+  char *remainder = crc(data, divisor);
+  for (int i=0; i<strlen(remainder); i++) {
+    if (remainder[i] == '1') {
+      printf("Error detected\n");
+      return;
+    }
+  }
+  printf("No error detected\n");
 }
 
 int main(){
@@ -60,6 +72,7 @@ int main(){
 		read(sockfd, result, BUFFER_SIZE);
 
 		printf("Message got from server: %s\n", result);
+    checkError(result, divisor);
 
 	}
 
