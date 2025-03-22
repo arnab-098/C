@@ -13,13 +13,11 @@
 #define BUFFER_SIZE 64
 
 const int LISTEN_BACKLOG = 5;
+const char *TERMINATION_PROMPT = "QUIT";
+const char *IP = "127.0.0.1";
+const int PORT = 4444;
 
 sem_t mutex;
-
-typedef struct ThreadData {
-  int fd;
-  char inputData[BUFFER_SIZE];
-} threadData;
 
 void signalHandler(int sigNum) {
   if (sigNum == SIGINT) {
@@ -33,26 +31,22 @@ void handleError(const char *error) {
   exit(EXIT_FAILURE);
 }
 
-void *bitStuffing(void *args) {
-  threadData *data = (threadData *)args;
-  char inputData[BUFFER_SIZE], result[BUFFER_SIZE];
-  int i, j, k, size, count, fd;
+void bitStuffing(char *inputData, char *result) {
+  int i, j, k, size, count;
+
   i = 0;
   j = 0;
-  size = strlen(data->inputData);
-
-  fd = data->fd;
-  strcpy(inputData, data->inputData);
+  size = strlen(inputData);
 
   while (i < size) {
-    if (inputData[i] == '0') {
-      count = 1;
+    if (inputData[i] == '1') {
+      count = 0;
       result[j] = inputData[i];
       for (k=i+1; inputData[k] == '0' && k < size && count < 5; k++) {
         result[++j] = inputData[k];
         count++;
         if (count == 5) {
-          result[++j] = '1';
+          result[++j] = '0';
         }
         i = k;
       }
@@ -63,12 +57,36 @@ void *bitStuffing(void *args) {
     j++;
   }
   result[j] = '\0';
+}
 
-  write(fd, result, BUFFER_SIZE);
+void *respond(void *args) {
+  int fd = *(int *)args;
 
-  sem_wait(&mutex);
-  printf("%s -> %s\n", inputData, result);
-  sem_post(&mutex);
+  char *inputData, *result;
+
+  inputData = (char *)malloc(sizeof(char) * BUFFER_SIZE);
+  result = (char *)malloc(sizeof(char) * BUFFER_SIZE);
+
+  while (1) {
+    read(fd, inputData, sizeof(inputData));
+
+    if (strcmp(inputData, TERMINATION_PROMPT) == 0) {
+      break;
+    }
+
+    bitStuffing(inputData, result);
+
+    write(fd, result, strlen(result));
+
+    sem_wait(&mutex);
+    printf("%s -> %s\n", inputData, result);
+    sem_post(&mutex);
+
+    sleep(1);
+  }
+
+  free(inputData);
+  free(result);
 
   pthread_exit(NULL);
 }
@@ -87,8 +105,8 @@ int main(int argc, char **argv) {
   }
 
   s_addr.sin_family = AF_INET;
-  s_addr.sin_port = htons(4444);
-  s_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
+  s_addr.sin_port = htons(PORT);
+  s_addr.sin_addr.s_addr = inet_addr(IP);
 
   if (bind(sfd, (struct sockaddr *) &s_addr, sizeof(s_addr)) == -1) {
     handleError("bind");
@@ -100,10 +118,6 @@ int main(int argc, char **argv) {
 
   printf("Server is waiting for connection...\n");
 
-  pthread_t threads[LISTEN_BACKLOG];
-
-  count = 0;
-
   while (1) {
     c_addr_size = sizeof(cfd);
     cfd = accept(sfd, (struct sockaddr *) &c_addr, &c_addr_size);
@@ -111,23 +125,10 @@ int main(int argc, char **argv) {
       handleError("accept");
     }
 
-    threadData data;
-    data.fd = cfd;
-    read(cfd, data.inputData, BUFFER_SIZE);
+  	pthread_t thread;
 
-    if (pthread_create(&threads[count++], NULL, &bitStuffing, (void *)&data) != 0) {
+    if (pthread_create(&thread, NULL, &respond, (void *)&cfd) != 0) {
       handleError("pthread_create");
-    }
-
-    if (count >= LISTEN_BACKLOG) {
-      count = 0;
-      while (count < LISTEN_BACKLOG) {
-        if (pthread_join(threads[count], NULL) != 0) {
-          handleError("pthread_join");
-        }
-        count++;
-      }
-      count = 0;
     }
   }
 

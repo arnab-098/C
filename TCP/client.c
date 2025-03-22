@@ -8,7 +8,10 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-const int BUFFER_SIZE = 32;
+const int BUFFER_SIZE = 33;
+const char *TERMINATION_PROMPT = "QUIT";
+const char *IP = "127.0.0.1";
+const int PORT = 4444;
 
 void signalHandler(int sigNum) {
   if (sigNum == SIGINT) {
@@ -35,24 +38,29 @@ int main(int argc, char **argv) {
   }
 
   addr.sin_family = AF_INET;
-  addr.sin_port = htons(4444);
-  addr.sin_addr.s_addr = inet_addr("127.0.0.1");
+  addr.sin_port = htons(PORT);
+  addr.sin_addr.s_addr = inet_addr(IP);
 
-  if (connect(fd, (struct sockaddr *) &addr, sizeof(addr))) {
+  if (connect(fd, (struct sockaddr *) &addr, sizeof(addr)) == -1) {
     handleError("connect");
   }
 
-  printf("Input data: ");
-  fgets(buffer, BUFFER_SIZE, stdin);
-  buffer[strlen(buffer)-1] = '\0';
+	while (1) {
+		printf("Input data: ");
+		fgets(buffer, sizeof(buffer), stdin);
+		buffer[strlen(buffer)-1] = '\0';
 
-  write(fd, buffer, BUFFER_SIZE);
-  read(fd, buffer, BUFFER_SIZE);
-  printf("Stuffed Data: %s\n", buffer);
+    if (strcmp(buffer, TERMINATION_PROMPT) == 0) {
+      break;
+    }
 
-  if (close(fd) == -1) {
-    handleError("close");
-  }
+		write(fd, buffer, strlen(buffer));
+    printf("Data sent to server: %s\n", buffer);
+		read(fd, buffer, sizeof(buffer));
+		printf("Data receviced from server: %s\n", buffer);
+	}
+
+  printf("Terminating Client...\n");
 
   return EXIT_SUCCESS;
 }
