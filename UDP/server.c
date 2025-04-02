@@ -108,14 +108,10 @@ char *hammingCode(const char *inputData) {
     j++;
   }
 
-  printf("Processing: %s\n", result);
-
   for (int i=0; i<errorBitsNum; i++) {
     int pos = pow(2, i);
     result[size-pos] = calculateParity(result, pos);
   }
-
-  printf("Final result: %s\n", result);
 
   return result;
 }
