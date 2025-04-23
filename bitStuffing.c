@@ -5,8 +5,9 @@
 
 void handleSystemError(const char *error);
 void handleCustomError(const char *error);
-char *bitStuffing(const char *data);
 int validate(const char *data);
+char *bitStuffing(const char *data);
+char *bitUnstuffing(const char *data);
 
 int main(int argc, char **argv) {
     if (argc != 2) {
@@ -47,20 +48,50 @@ char *bitStuffing(const char *data) {
         handleSystemError("malloc");
     }
 
-    int i=0, j=0, count;
+    int i=0, j=0, count=0;
 
     while (data[i] != '\0') {
-        result[j++] = data[i++];
         if (data[i] == '1') {
             count++;
-            if (count == 5) {
-                result[j++] = '0';
-                count = 0;
-            }
         } else {
             count = 0;
         }
+        result[j++] = data[i++];
+        if (count == 5) {
+            count = 0;
+            result[j++] = '0';
+        }
     }
 
+    printf("Unstuffed data: %s\n", bitUnstuffing(result));
+
+    return result;
+}
+
+char *bitUnstuffing(const char *data) {
+    if (!validate(data)) {
+        handleCustomError("Invalid data input");
+    }
+    
+    size_t size = strlen(data);
+    char *result = (char *)malloc(sizeof(char) * size);
+    if (result == NULL) {
+        handleSystemError("malloc");
+    }
+
+    int i=0, j=0, count=0;
+
+    while (data[i] != '\0') {
+        if (data[i] == '1') {
+            count++;
+        } else {
+            count = 0;
+        }
+        result[j++] = data[i++];
+        if (count == 5) {
+            i++;
+        }
+    }
+    
     return result;
 }
