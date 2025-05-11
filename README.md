@@ -1,7 +1,4 @@
 [![File Programming Language.svg ...](https://images.openai.com/thumbnails/03793b9abbac002fb2b4f713be014fad.png)](https://commons.wikimedia.org/wiki/File%3AC_Programming_Language.svg)
-
-Here's a detailed `README.md` for your [C](https://github.com/arnab-098/C) repository:
-
 ---
 
 # C Programming Projects
