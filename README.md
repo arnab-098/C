@@ -75,6 +75,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-Let me know if you'd like this saved as a `.md` file or committed into your repository.
-
 [1]: https://github.com/arnab098/ADM?utm_source=chatgpt.com "arnab098/ADM - GitHub"
