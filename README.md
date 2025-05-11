@@ -33,7 +33,7 @@ The repository includes a collection of C programs, each focusing on different a
 ### Prerequisites
 
 * A C compiler (e.g., GCC)
-* POSIX-compliant operating system (Linux, macOS)([GitHub][1])
+* POSIX-compliant operating system (Linux, macOS)
 
 ### Compilation
 
@@ -68,11 +68,3 @@ For understanding the concepts implemented in these programs, consider referring
 ## Contributing
 
 Contributions are welcome! Feel free to fork the repository, submit issues, and create pull requests.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-[1]: https://github.com/arnab098/ADM?utm_source=chatgpt.com "arnab098/ADM - GitHub"
