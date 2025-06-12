@@ -49,7 +49,7 @@ int main() {
         valread = read(new_socket, buffer, BUFFER_SIZE);
         printf("%s\n", buffer);
         write(new_socket, response, strlen(response));
-        printf("Response sent\n");
+        printf("Response sent\n\n");
         close(new_socket);
     }
 
