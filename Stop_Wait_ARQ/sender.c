@@ -49,6 +49,7 @@ void main()
             sleep(2);
             // Resending frame
             printf("Timer timed out. Frame Lost.\nResending frame with sequence number : %d\n",seqno);
+            continue
         }
 
         write(client_fd,(void *)&sequence_no,sizeof(sequence_no));
