@@ -13,8 +13,7 @@
 #define MAX 100
 unsigned int sequence_no;
 
-void main()
-{
+void main() {
     int server_fd,client_fd,reuse=1,server_len,client_len,seqno=0,ack=0;
     struct sockaddr_in server_address,client_address;
     struct timeval tv;
@@ -38,14 +37,12 @@ void main()
 
     printf("Sender Running\n");
 
-    while(1)
-    {
+    while(1) {
         sequence_no=seqno;
         printf("Sending frame with sequence number : %d\n",seqno);
 
         int ploss=rand()%3;
-        if(ploss==2)
-        {
+        if(ploss==2) {
             sleep(2);
             // Resending frame
             printf("Timer timed out. Frame Lost.\nResending frame with sequence number : %d\n",seqno);
@@ -56,38 +53,28 @@ void main()
         setsockopt(client_fd,SOL_SOCKET,SO_RCVTIMEO,&tv,sizeof(tv));
         time_t t1=time(NULL);
 
-        while(1)
-        {
+        while(1) {
             int bytes=read(client_fd,(void *)&ack,sizeof(ack));
             time_t t2=time(NULL);
-            if(bytes>0)
-            {
-                if(ack==seqno+1)
-                {
+            if(bytes>0) {
+                if(ack==seqno+1) {
                     printf("Acknowledgement for frame %d received\n",seqno);
                     seqno=(seqno+1)%2;
                     break;
-                }
-                else
-            {
+                } else {
                     time_t left=t1+5-t2;
-                    if(left>0)
-                    {
+                    if(left>0) {
                         printf("Previous ACK %d received. Ignoring\n",ack-1);
                         struct timeval timeleft;
                         timeleft.tv_sec=left;
                         timeleft.tv_usec=0;
                         setsockopt(client_fd,SOL_SOCKET,SO_RCVTIMEO,&timeleft,sizeof(struct timeval));
-                    }
-                    else
-                {
+                    } else {
                         printf("Acknowledgement for frame %d not received. Retransmitting\n",seqno);
                         break;
                     }
                 }
-            }
-            else
-        {
+            } else {
                 printf("Acknowledgement for frame %d not received. Retransmitting\n",seqno);
                 break;
             }

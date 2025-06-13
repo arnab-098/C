@@ -25,32 +25,29 @@ void main()
     len=sizeof(address);
 
     result=connect(sockfd,(struct sockaddr *)&address,len);
-    if(result==-1)
-    {
+    if(result==-1) {
         printf("Cannot connect to the sender\n");
         perror("connect");
         exit(1);
+    } else {
+        printf("Receiver Connected\n");
     }
-    else printf("Receiver Connected\n");
 
     srand(time(NULL));
-    while(1)
-    {
+
+    while(1) {
         read(sockfd,(void *)&sequence_no,sizeof(sequence_no));
-        if(sequence_no==seqno)
-        {
+        if(sequence_no==seqno) {
             printf("Frame received : %d\n",seqno);
             delay=rand()%7+1;
             printf("Sending ACK after %d seconds\n",delay);
             sleep(delay);
-            ack=sequence_no+1;
+            ack = (sequence_no + 1) % 2;
             write(sockfd,(void *)&ack,sizeof(int));
-            seqno=(seqno+1)%2;
-        }
-        else
-    {
+            seqno = ack;
+        } else {
             printf("Duplicate Frame %d received\n",sequence_no);
-            ack=sequence_no+1;
+            ack = sequence_no;
             write(sockfd,(void *)&ack,sizeof(int));
         }
     }
