@@ -43,9 +43,7 @@ void main()
         sequence_no=seqno;
         printf("Sending frame with sequence number : %d\n",seqno);
 
-        // Frame Lost while sending
         int ploss=rand()%3;
-        //printf("Packet Loss test : %d\n",ploss);
         if(ploss==2)
         {
             sleep(2);
