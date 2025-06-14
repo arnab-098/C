@@ -19,61 +19,64 @@ void handle_error(const char *msg);
 
 
 int main(int argc, char **argv) {
-  int sock_fd;
-  struct sockaddr_in sock_addr;
-  socklen_t sock_size;
-  char * input, *output;
+    int sock_fd;
+    struct sockaddr_in sock_addr;
+    socklen_t sock_size;
+    char * input, *output;
 
-  sock_fd = socket(AF_INET, SOCK_DGRAM, 0);
-  if (sock_fd == -1) {
-    handle_error("socket");
-  }
-
-  sock_addr.sin_family = AF_INET;
-  sock_addr.sin_port = htons(PORT);
-  sock_addr.sin_addr.s_addr = inet_addr(IP);
-
-  sock_size = sizeof(sock_addr);
-
-  input = (char *)malloc(sizeof(char) * INPUT_BUFFER_SIZE);
-  output = (char *)malloc(sizeof(char) * OUTPUT_BUFFER_SIZE);
-
-  while(1) {
-    bzero(input, INPUT_BUFFER_SIZE);
-    printf("Enter data: ");
-    fgets(input, INPUT_BUFFER_SIZE, stdin);
-    input[strlen(input)-1] = '\0';
-
-    if (sendto(sock_fd, input, strlen(input)+1, 0, (struct sockaddr *)&sock_addr, sock_size) == -1) {
-      handle_error("sendto");
+    sock_fd = socket(AF_INET, SOCK_DGRAM, 0);
+    if (sock_fd == -1) {
+        handle_error("socket");
     }
 
-    if (!strcmp(input, TERMINATION_PROMPT)) {
-      break;
+    sock_addr.sin_family = AF_INET;
+    sock_addr.sin_port = htons(PORT);
+    if (inet_pton(AF_INET, IP, &sock_addr.sin_addr) != 1) {
+        perror("inet_pton");
+        return EXIT_FAILURE;
     }
 
-    printf("[+]Data sent: %s\n", input);
+    sock_size = sizeof(sock_addr);
 
-    bzero(output, OUTPUT_BUFFER_SIZE);
-    if (recvfrom(sock_fd, output, OUTPUT_BUFFER_SIZE, 0, (struct sockaddr *)&sock_addr, &sock_size) == -1) {
-      handle_error("recvfrom");
+    input = (char *)malloc(sizeof(char) * INPUT_BUFFER_SIZE);
+    output = (char *)malloc(sizeof(char) * OUTPUT_BUFFER_SIZE);
+
+    while(1) {
+        bzero(input, INPUT_BUFFER_SIZE);
+        printf("Enter data: ");
+        fgets(input, INPUT_BUFFER_SIZE, stdin);
+        input[strlen(input)-1] = '\0';
+
+        if (sendto(sock_fd, input, strlen(input)+1, 0, (struct sockaddr *)&sock_addr, sock_size) == -1) {
+            handle_error("sendto");
+        }
+
+        if (!strcmp(input, TERMINATION_PROMPT)) {
+            break;
+        }
+
+        printf("[+]Data sent: %s\n", input);
+
+        bzero(output, OUTPUT_BUFFER_SIZE);
+        if (recvfrom(sock_fd, output, OUTPUT_BUFFER_SIZE, 0, (struct sockaddr *)&sock_addr, &sock_size) == -1) {
+            handle_error("recvfrom");
+        }
+        printf("[+}Data recv: %s\n", output);
     }
-    printf("[+}Data recv: %s\n", output);
-  }
 
-  free(input);
-  free(output);
+    free(input);
+    free(output);
 
-  if (close(sock_fd) == -1) {
-    handle_error("close");
-  }
+    if (close(sock_fd) == -1) {
+        handle_error("close");
+    }
 
-  printf("Terminating client...\n");
+    printf("Terminating client...\n");
 
-  return EXIT_SUCCESS;
+    return EXIT_SUCCESS;
 }
 
 void handle_error(const char *msg) {
-  fprintf(stderr, "%s failed with error: %d", errno);
-  exit(EXIT_FAILURE);
+    fprintf(stderr, "%s failed with error: %d", errno);
+    exit(EXIT_FAILURE);
 }

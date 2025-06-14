@@ -34,7 +34,10 @@ int main(int argc, char **argv) {
 
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(PORT);
-    inet_pton(AF_INET, IP, &server_addr.sin_addr);
+    if (inet_pton(AF_INET, IP, &server_addr.sin_addr) != 1) {
+        perror("inet_pton");
+        return EXIT_FAILURE;
+    }
 
     server_size = sizeof(server_addr);
     client_size = sizeof(client_addr);
