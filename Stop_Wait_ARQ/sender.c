@@ -46,7 +46,7 @@ void main() {
             sleep(2);
             // Resending frame
             printf("Timer timed out. Frame Lost.\nResending frame with sequence number : %d\n",seqno);
-            continue
+            continue;
         }
 
         write(client_fd,(void *)&sequence_no,sizeof(sequence_no));
@@ -57,14 +57,14 @@ void main() {
             int bytes=read(client_fd,(void *)&ack,sizeof(ack));
             time_t t2=time(NULL);
             if(bytes>0) {
-                if(ack==seqno+1) {
+                if(ack == (seqno+1) % 2 ) {
                     printf("Acknowledgement for frame %d received\n",seqno);
                     seqno=(seqno+1)%2;
                     break;
                 } else {
                     time_t left=t1+5-t2;
                     if(left>0) {
-                        printf("Previous ACK %d received. Ignoring\n",ack-1);
+                        printf("Previous ACK %d received. Ignoring\n",ack);
                         struct timeval timeleft;
                         timeleft.tv_sec=left;
                         timeleft.tv_usec=0;
